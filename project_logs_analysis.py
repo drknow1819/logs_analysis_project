@@ -1,4 +1,6 @@
-#! /usr/bin/python -v
+#!/usr/bin/env python
+
+
 import psycopg2
 
 
@@ -9,10 +11,10 @@ def logs_analysis():
         db = psycopg2.connect("dbname=news")
         c = db.cursor()
         #
-        # Most viewed articles query
+        # Most 3 viewed articles query
         #
         query1 = '''select articles.title, count(log.path) as views
-        from log join articles on substring(log.path,10) = articles.slug
+        from log join articles on log.path = concat('/article/',articles.slug)
         group by articles.title, log.status
         having log.status='200 OK'
         order by views desc limit 3;'''
@@ -24,14 +26,14 @@ def logs_analysis():
         for x in pop_art:
             print "  ", x[0], '__', x[1], 'views'
         #
-        # Top 3 famous authors query
+        # Top famous authors query
         #
         query2 = '''select authors.name, count(log.path) as views
         from log join (articles join authors on articles.author = authors.id)
-        on substring(log.path,10) = articles.slug
-        group by substring(log.path,10), authors.name, log.status
+        on log.path = concat('/article/',articles.slug)
+        group by authors.name, log.status
         having log.status='200 OK'
-        order by views desc limit 3;'''
+        order by views desc;'''
         c.execute(query2)
         pop_auth = c.fetchall()
         print
@@ -40,12 +42,12 @@ def logs_analysis():
         for x in pop_auth:
             print "  ", x[0], '__', x[1], 'views'
         #
-        # 404 status percentage query
+        # errors percentage query
         #
         query3 = '''select days, round(bad_percent,1)
         from (select to_char((log.time)::date, 'Month dd, yyyy') as days,
-        (sum(case when status = '404 NOT FOUND' then 1 else 0 end) * 100)
-        ::numeric / count(status) as bad_percent
+        (sum(case when log.status != '200 OK' then 1 else 0 end) * 100)
+        ::numeric / count(log.status) as bad_percent
         from log
         group by days
         order by bad_percent desc) as final
@@ -61,4 +63,9 @@ def logs_analysis():
         c.close()
 
 
-logs_analysis()
+if __name__ == '__main__':      # Make the code friendly
+    print 'Running ...'
+    logs_analysis()
+else:
+    print 'Importing ...'
+    logs_analysis()

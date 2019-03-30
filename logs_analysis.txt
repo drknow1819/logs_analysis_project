@@ -1,4 +1,5 @@
-﻿Welcome to my first project "Logs Analysis"
+﻿Running ...
+Welcome to my first project "Logs Analysis"
 
 A.1
 Most popular three articles of all time are:
@@ -8,9 +9,10 @@ Most popular three articles of all time are:
 
 A.2
 Most popular authors are:
-   Rudolf von Treppenwitz __ 338647 views
-   Ursula La Multa __ 253801 views
+   Ursula La Multa __ 507594 views
+   Rudolf von Treppenwitz __ 423457 views
    Anonymous Contributor __ 170098 views
+   Markoff Chaney __ 84557 views
 
 A.3
 Days that more than '1%' of requests lead to errors:
